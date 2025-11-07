@@ -1,22 +1,17 @@
 // Promise API
-const fsp = require("fs/promises");
+const fs = require("fs/promises");
 
 (async () => {
-    try {
-        await fsp.copyFile("command.txt", "copied-promise.txt");
-    }  catch(error){
-        console.log(error);
+    const commandFileHandler = await fs.open("./command.txt", "r");
+
+    const watcher = fs.watch("./command.txt");
+
+    for await (const event of watcher) {
+        if (event.eventType === "change") {
+            console.log("the file was changed");
+            console.log(await commandFileHandler.stat());
+            // const content = await commandFileHandler.read();
+            // console.log(content);
+        }
     }
 }) ();
-
-// Callback API
-const fsc = require("fs");
-
-fsc.copyFile("command.txt","copied-callback.txt", (error)=> {
-    if(error) console.log(error);
-});
-
-// Synchronous API
-const fss = require("fs");
-
-fss.copyFile("command.txt", "copied-sync.txt")
