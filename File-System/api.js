@@ -21,7 +21,7 @@ const fs = require ("fs/promises");
 
             const content = await commandFileHandler.read(buff, offset, length, position)
             console.log(content);
-             
+              
         }
     }
 }) ();
