@@ -1,1 +1,1 @@
- delete a file newFile.txt
+rename a file text.txt to testw.txt

@@ -28,10 +28,24 @@ const path = require("path");
 
     const deleteFile = async (path) => {
         console.log(`Deleting ${path}...`);
-        await fs.rm(path)
-            console.log("File deleted");        
+        try{
+        await fs.rm(path)  //unlink()
+        console.log("File deleted");
+        } catch (e) {
+            console.log("file already deleted");
+        }        
     }
-    
+
+    const renameFile = async (oldPath , newPath) => {
+        console.log(`Renaming ${oldPath} to ${newPath}`);
+        try{
+            await fs.rename(oldPath, newPath)
+        } catch (e) {
+            console.log("Couldn't rename file");
+            
+        }
+    }
+
     const commandFileHandler = await fs.open("command.txt", "r") 
 
     const watcher = fs.watch("./command.txt");
@@ -63,6 +77,13 @@ const path = require("path");
         if(command.includes(DELETE_FILE)){
             const filePath = command.substring(DELETE_FILE.length + 1)
             deleteFile(filePath)
+        }
+
+        if(command.includes(RENAME_FILE)){
+            const _idx = command.indexOf(" to ")
+            const filePath = command.substring(RENAME_FILE.length +1, _idx)
+            const content = command.substring(_idx + 4);
+            renameFile(filePath, content)
         }
     })
 
