@@ -1,4 +1,5 @@
 const fs = require ("fs/promises");
+const path = require("path");
 
 //open (file descriptor) just number assigned to files we want to read 
 //  file then able to read or write
@@ -6,9 +7,12 @@ const fs = require ("fs/promises");
 //watcher
 (async () => {
     //commands 
+    const CREATE_FILE = "create a file" 
+    const DELETE_FILE = "delete a file" 
+    const RENAME_FILE = "rename a file" 
+    const UPDATE_FILE = "update a file" 
+    
     const createFile =async (path) => {
-        let existingFileHandle;
-        
         try{
         const existingFileHandle = await fs.open(path, "r")
         existingFileHandle.close()
@@ -18,10 +22,16 @@ const fs = require ("fs/promises");
             const newFile = await fs.open(path, "w")
             console.log("A new file was successfully created");
             newFile.close()
-        }
-            
+        }      
+
+    };
+
+    const deleteFile = async (path) => {
+        console.log(`Deleting ${path}...`);
+        await fs.rm(path)
+            console.log("File deleted");        
     }
-    const CREATE_FILE = "create a file" 
+    
     const commandFileHandler = await fs.open("command.txt", "r") 
 
     const watcher = fs.watch("./command.txt");
@@ -47,6 +57,12 @@ const fs = require ("fs/promises");
         if(command.includes(CREATE_FILE)){
             const filePath = command.substring(CREATE_FILE.length +1 );
             createFile(filePath);
+        }
+
+        //delete file <path>
+        if(command.includes(DELETE_FILE)){
+            const filePath = command.substring(DELETE_FILE.length + 1)
+            deleteFile(filePath)
         }
     })
 

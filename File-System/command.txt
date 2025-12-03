@@ -1,1 +1,1 @@
- create a file newFile.txt
+ delete a file newFile.txt
