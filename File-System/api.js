@@ -106,7 +106,7 @@ const { RetryAgent } = require("undici-types");
             const filePath = command.substring(UPDATE_FILE.length + 1, _idx)
             const content = command.substring(_idx + 15);
 
-            UPDATE_FILE(filePath, content)
+            updateFile(filePath, content)
         }
     })
 
