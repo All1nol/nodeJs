@@ -1,5 +1,6 @@
 const fs = require ("fs/promises");
 const path = require("path");
+const { RetryAgent } = require("undici-types");
 
 //open (file descriptor) just number assigned to files we want to read 
 //  file then able to read or write
@@ -46,6 +47,20 @@ const path = require("path");
         }
     }
 
+    let addedContent; 
+    const updateFile = async(path, content) => {
+        if( addedContent = content ) return; 
+        try {
+            const fileHandle = await fs.open(path, "a");
+            fileHandle.write(content);
+            addedContent= content; 
+            console.log("the content was added successfully");
+        } catch (e) {
+            console.log("an error occured while removing the file");
+            
+        }
+    }
+
     const commandFileHandler = await fs.open("command.txt", "r") 
 
     const watcher = fs.watch("./command.txt");
@@ -84,6 +99,14 @@ const path = require("path");
             const filePath = command.substring(RENAME_FILE.length +1, _idx)
             const content = command.substring(_idx + 4);
             renameFile(filePath, content)
+        }
+
+        if(command.includes(UPDATE_FILE)){
+            const _idx = command.indexOf(" this content: ");
+            const filePath = command.substring(UPDATE_FILE.length + 1, _idx)
+            const content = command.substring(_idx + 15);
+
+            UPDATE_FILE(filePath, content)
         }
     })
 
