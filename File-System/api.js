@@ -3,25 +3,56 @@ const fs = require ("fs/promises");
 //open (file descriptor) just number assigned to files we want to read 
 //  file then able to read or write
 
-
+//watcher
 (async () => {
+    //commands 
+    const createFile =async (path) => {
+        let existingFileHandle;
+        
+        try{
+        const existingFileHandle = await fs.open(path, "r")
+        existingFileHandle.close()
+
+        return console.log(`The file ${path} already exists`);
+        } catch (e) {
+            const newFile = await fs.open(path, "w")
+            console.log("A new file was successfully created");
+            newFile.close()
+        }
+            
+    }
+    const CREATE_FILE = "create a file" 
     const commandFileHandler = await fs.open("command.txt", "r") 
 
     const watcher = fs.watch("./command.txt");
-      
+    commandFileHandler.on("change", async () => {
+        console.log("The file was changed");
+        //get size
+        const size = (await commandFileHandler.stat()).size;
+        //the location at which we want to start filling our buffer
+        const offset = 0;
+        //allocate our vugger with the size of the file
+        const buff=  Buffer.alloc(size)
+        //how many bytes we want to read
+        const length = buff.byteLength;
+        //from which position
+        const position = 0;
+    
+        await commandFileHandler.read(buff, offset, length, position)
+        
+        //decoder  
+        const command = buff.toString("utf-8"); //default 
+        
+        //create a file: <path>
+        if(command.includes(CREATE_FILE)){
+            const filePath = command.substring(CREATE_FILE.length +1 );
+            createFile(filePath);
+        }
+    })
+
     for await (const event of watcher) {
         if(event.eventType === "change"){
-            console.log("The file was changed");
-            //get size
-            const size = (await commandFileHandler.stat()).size;
-            const offset = 0;
-            const buff=  Buffer.alloc(size)
-            const length = buff.byteLength;
-            const position = 0;
-
-            const content = await commandFileHandler.read(buff, offset, length, position)
-            console.log(content);
-              
+            commandFileHandler.emit("change")
         }
     }
 }) ();

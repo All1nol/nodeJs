@@ -1,1 +1,1 @@
- new contents
+ create a file newFile.txt
