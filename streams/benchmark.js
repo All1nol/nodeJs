@@ -58,16 +58,38 @@
 
 
 
-const fs = require("node:fs");
+// const fs = require("node:fs");
+
+// (async () => {
+//     console.time("writeMany");
+
+//     fs.open("test.txt", "w", (err, fd) => {
+//         for( let i = 0; i < 1000000; i++){
+//             const buff =Buffer.from(` ${i} `, "utf-8");
+//             fs.writeSync(fd, buff);
+//         }
+//         console.timeEnd("writeMany");
+//     });
+// }) ();
+
+//writeMany: 4.813s
+
+
+const fs = require("node:fs/promises");
 
 (async () => {
     console.time("writeMany");
+    const fileHandle = await fs.open("test.txt", "w");
 
-    fs.open("test.txt", "w", (err, fd) => {
-        for( let i = 0; i < 1000000; i++){
-            const buff =Buffer.from(` ${i} `, "utf-8");
-            fs.writeSync(fd, buff);
-        }
+    const stream = fileHandle.createWriteStream()
+
+    for (let i = 0; i< 1000000; i++){
+        const buff = Buffer.from(` ${i} `, "utf-8");
+        stream.write(buff);
+    }
+
+    stream.end();
         console.timeEnd("writeMany");
-    });
 }) ();
+
+//writeMany: 287.867ms
